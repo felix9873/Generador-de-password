@@ -90,11 +90,11 @@ void PanelControl()
 
     if (opcion == 1)
     {
-        AgregarContrasena(passwords);
+        AgregarPassword(passwords);
     }
     else if (opcion == 2)
     {
-        PasswordAletoria();
+        PasswordAletorio();
     }
     else if (opcion == 3)
     {
@@ -175,7 +175,7 @@ string ByteArrayToString(byte[] arrInput)
 }
 
 
-void PasswordAletoria()
+void PasswordAletorio()
 {
     string[] characters = { "a" ,"A" ,"b","B","c","C","d"
                           ,"D","e","E","f","F","g","G","h"
@@ -207,7 +207,7 @@ void PasswordAletoria()
 }
 
 
-void AgregarContrasena(List<string> passwords)
+void AgregarPassword(List<string> passwords)
 {
     bool isValid = false;
 
