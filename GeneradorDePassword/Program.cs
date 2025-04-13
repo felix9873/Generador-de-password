@@ -232,7 +232,7 @@ void AgregarContrasena(List<string> passwords)
             {
                 Console.WriteLine("ingresa una constraseña");
             }
-            else
+            
             {
                 passwords.Add(inputUser);
             }
