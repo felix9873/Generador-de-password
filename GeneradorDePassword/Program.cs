@@ -1,27 +1,179 @@
 ﻿
+using System.Text;
+using XSystem.Security.Cryptography;
+
+
 Console.WriteLine("             -----------------------------------administrador de contraseñas-----------------------------------");
 Console.WriteLine();
 
 List<string> passwords = new List<string>();
 
-int opcion;
+PanelControl();
 
-ChoosePanel(out opcion);
+void PanelAdministrarPassword()
+{
+    Console.WriteLine();
 
-if (opcion == 1)
-{
-    AgregarContrasena(passwords);
-}
-else if (opcion == 2)
-{
-    PasswordAletoria();
-}
-else if (opcion == 3)
-{
-    return;
+    Console.WriteLine("Panel administrar");
+    Console.WriteLine("1: mostrar password");
+    Console.WriteLine("2: eliminar password por id");
+    Console.WriteLine("3: buscar password por id");
+    Console.WriteLine("4: regresar al panel de control");
+    Console.WriteLine();
+
+    Console.Write("opcion: ");
+
+    int opcionAdm;
+
+    while (!int.TryParse(Console.ReadLine(), out opcionAdm) || 
+        (opcionAdm != 1 && opcionAdm != 2
+        && opcionAdm != 3 && opcionAdm !=4) )
+    {
+        Console.Write(" introduzca 1 o 2 o 3: 4");
+    }
+
+    if(opcionAdm == 1)
+    {
+        
+        MostrarPassword(passwords);
+        PanelAdministrarPassword();
+    }
+    else if (opcionAdm == 2) 
+    {
+        Console.Write("ingresa el id para eliminar el password: ");
+
+        int id = Convert.ToInt32(Console.ReadLine());
+
+        EliminarPasswordPorId(passwords, id);
+        PanelAdministrarPassword();
+    }
+    else if(opcionAdm == 3)
+    {
+        Console.Write("ingresa el id para buscar el password: ");
+
+        int id = Convert.ToInt32(Console.ReadLine());
+
+        BuscarPorId(passwords, id);
+        PanelAdministrarPassword();
+    }
+    else if(opcionAdm == 4)
+    {
+        PanelControl();
+    }
 }
 
-Console.WriteLine();
+void BuscarPorId(List<string> passwords, int id)
+{
+    if(id > 0 )
+    {
+        byte[] tmpSource;
+
+        tmpSource = Encoding.UTF8.GetBytes(passwords[id - 1]);
+
+        byte[] tmpHash;
+
+        tmpHash = new MD5CryptoServiceProvider().ComputeHash(tmpSource);
+
+        Console.WriteLine($"el password encontrado: {ByteArrayToString(tmpHash)} con id {id}");
+    }
+    else
+    {
+        Console.WriteLine("ingresa un id mayor a 0");
+    }
+}
+void PanelControl()
+{
+    
+    int opcion;
+
+    ChoosePanel(out opcion);
+
+    if (opcion == 1)
+    {
+        AgregarContrasena(passwords);
+    }
+    else if (opcion == 2)
+    {
+        PasswordAletoria();
+    }
+    else if (opcion == 3)
+    {
+        if (passwords.Count > 0)
+        {
+            PanelAdministrarPassword();
+        }
+        else
+        {
+            Console.WriteLine();
+
+            Console.WriteLine("para ingresar al administrador de password necesita ingresar un password");
+
+            Console.WriteLine();
+
+            PanelControl();
+
+        }
+
+    }
+    else if (opcion == 4)
+    {
+        return;
+    }
+
+    Console.WriteLine();
+
+}
+void EliminarPasswordPorId(List<string> password,int id)
+{
+   if(id > 0)
+    {
+        password.RemoveAt(id - 1);
+
+        Console.WriteLine($"password eliminado con : {id}");
+    }
+    else
+    {
+        Console.WriteLine("ingresa un id mayor a 0");
+    }
+   
+}
+
+void MostrarPassword(List<string> passwords)
+{
+    
+    Console.WriteLine("--------------------------------------------------------------");
+
+    Console.WriteLine("passwords");
+
+    Console.WriteLine("id");
+
+    for (int i = 0; i < passwords.Count; i++) 
+    {
+        byte[] tmpSource;
+
+        tmpSource = Encoding.UTF8.GetBytes(passwords[i]);
+
+        byte[] tmpHash;
+
+        tmpHash = new MD5CryptoServiceProvider().ComputeHash(tmpSource);
+
+        Console.WriteLine($"{i + 1}  : {ByteArrayToString(tmpHash)}");
+    }
+
+}
+
+string ByteArrayToString(byte[] arrInput)
+{
+    int i;
+    StringBuilder sOutput = new StringBuilder(arrInput.Length);
+
+    for (i = 0; i < arrInput.Length; i++)
+    {
+        sOutput.Append(arrInput[i].ToString("X2"));
+    }
+    return sOutput.ToString();
+}
+
 
 void PasswordAletoria()
 {
@@ -88,38 +240,23 @@ void AgregarContrasena(List<string> passwords)
 
 
         Console.WriteLine();
-        Console.Write("Por favor, introduzca 1 o 2: ");
+        Console.Write("introduzca 1 o 2: ");
 
         string option = Console.ReadLine();
+        Console.WriteLine();
 
         if (option == "2")
         {
             isValid = true;
-            ChoosePanel(out opcion);
 
-            if (opcion == 1)
-            {
-                AgregarContrasena(passwords);
-
-            }
-            else if (opcion == 2)
-            {
-                PasswordAletoria();
-                return;
-            }
-            else if (opcion == 4)
-            {
-                
-            }
-            else if (opcion == 3)
-            {
-                return;
-            }
+            PanelControl();
+            return;
 
         }
         else if (option == "1")
         {
             isValidOption = false;
+            
         }
         else
         {
@@ -132,9 +269,6 @@ void AgregarContrasena(List<string> passwords)
 
     }
 
-
-
-
 }
 
 void ChoosePanel(out int opcion)
@@ -145,8 +279,9 @@ void ChoosePanel(out int opcion)
 
     Console.WriteLine("1: ingresar contraseña");
     Console.WriteLine("2: generar contraseña de manera aleatoria");
-    Console.WriteLine("3: salir del programa");
-    Console.WriteLine("4: administrar password");
+    Console.WriteLine("3: administrar password");
+    Console.WriteLine("4: salir del programa");
+   
     Console.WriteLine();
 
     Console.Write("opcion: ");
